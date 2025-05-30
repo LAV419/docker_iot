@@ -145,3 +145,14 @@ def logout():
     session.clear()
     logging.info("el usuario {} cerró su sesión".format(session.get("user_id")))
     return redirect(url_for('index'))
+
+@app.route("/toggle-theme", methods=["POST"])
+def toggle_theme():
+    theme = request.json.get("theme")
+    if theme in ['flatly', 'darkly']:
+        session['theme'] = theme
+    return {'status': 'ok'}
+
+@app.context_processor
+def inject_theme():
+    return {'theme': session.get('theme', 'flatly')}  # flatly por defecto
