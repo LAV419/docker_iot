@@ -156,3 +156,9 @@ def toggle_theme():
 @app.context_processor
 def inject_theme():
     return {'theme': session.get('theme', 'flatly')}  # flatly por defecto
+
+@app.route('/publicar')
+@require_login
+def publicar():
+    nodos = ['Nodo 1', 'Nodo 2', 'Nodo 3']  # Lista de nodos ficticia
+    return render_template('publicar.html', nodos=nodos)

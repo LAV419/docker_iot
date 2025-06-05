@@ -1,5 +1,12 @@
 {% extends "layout.html" %}
+
 {% block body %}
+<div class="row mb-3">
+  <div class="col-md-7 mx-auto text-end">
+    <a href="{{ url_for('publicar') }}" class="btn btn-success">Ir a Publicar</a>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-7 mx-auto">
     <div class="card card-body">
@@ -7,24 +14,24 @@
         <legend>Cargar contacto</legend>
         <div class="form-group">
           <label class="col-form-label mt-4" for="inputDefault">Nombre completo</label>
-          <input type="text" class="form-control" id="inputDefault" data-ddg-inputtype="unknown" name="nombre">
+          <input type="text" class="form-control" id="inputDefault" name="nombre">
         </div>
         <div class="form-group">
           <label class="col-form-label mt-4" for="tel">Teléfono</label>
-          <input type="tel" class="form-control" id="tel" data-ddg-inputtype="unknown" name="tel">
+          <input type="tel" class="form-control" id="tel" name="tel">
         </div>
         <div class="form-group">
           <label for="email" class="form-label mt-4">Email</label>
-          <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp"
-            data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true">
-          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp">
+          <small id="emailHelp" class="form-text text-muted">Nunca compartiremos tu email con nadie.</small>
         </div>
-        <button type="submit" class="btn btn-primary mt-4">guardar</button>
+        <button type="submit" class="btn btn-primary mt-4">Guardar</button>
       </form>
     </div>
   </div>
 </div>
-<div class="row pt-5 ">
+
+<div class="row pt-5">
   <div class="col-md-7 mx-auto">
     <table class="table table-hover table-default">
       <thead>
@@ -33,19 +40,19 @@
           <th scope="col">Nombre completo</th>
           <th scope="col">Teléfono</th>
           <th scope="col">Email</th>
-          <th scope="col">acción</th>
+          <th scope="col">Acción</th>
         </tr>
       </thead>
       <tbody>
         {% for contacto in contactos %}
         <tr>
-          <td>{{contacto.0}}</td>
-          <td>{{contacto.1}}</td>
-          <td>{{contacto.2}}</td>
-          <td>{{contacto.3}}</td>
+          <td>{{ contacto.0 }}</td>
+          <td>{{ contacto.1 }}</td>
+          <td>{{ contacto.2 }}</td>
+          <td>{{ contacto.3 }}</td>
           <td>
-            <a href="{{url_for('conseguir_contacto',id=contacto.0)}}" class="btn btn-secondary">editar</a>
-            <a href="{{url_for('borrar_contacto',id=contacto.0)}}" class="btn btn-danger btn-borrar">borrar</a>
+            <a href="{{ url_for('conseguir_contacto', id=contacto.0) }}" class="btn btn-secondary">Editar</a>
+            <a href="{{ url_for('borrar_contacto', id=contacto.0) }}" class="btn btn-danger btn-borrar">Borrar</a>
           </td>
         </tr>
         {% endfor %}

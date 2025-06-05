@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+
+  <a href="{{ url_for('index') }}" class="btn btn-secondary mb-4">← Atrás</a>
+
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <div class="card card-body">
+        <h2 class="mb-4">Publicar</h2>
+
+        <form>
+          <!-- Selección de acción -->
+          <div class="mb-3">
+            <label for="accionSelect" class="form-label">Acción</label>
+            <select id="accionSelect" class="form-select" onchange="toggleSetpointInput()">
+              <option value="destello">Destello</option>
+              <option value="setpoint">Setpoint</option>
+            </select>
+          </div>
+
+          <!-- Valor para Setpoint -->
+          <div class="mb-3" id="setpointGroup" style="display: none;">
+            <label for="setpointInput" class="form-label">Valor de Setpoint</label>
+            <input type="number" class="form-control" id="setpointInput" placeholder="Ingrese un valor numérico">
+          </div>
+
+          <!-- Selección de nodo -->
+          <div class="mb-3">
+            <label for="nodoSelect" class="form-label">Seleccionar Nodo</label>
+            <select id="nodoSelect" class="form-select">
+              <option value="nodo1">Nodo 1</option>
+              <option value="nodo2">Nodo 2</option>
+              <option value="nodo3">Nodo 3</option>
+              <!-- Agregá más nodos si querés -->
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-primary">Publicar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSetpointInput() {
+      const accion = document.getElementById('accionSelect').value;
+      const setpointGroup = document.getElementById('setpointGroup');
+      setpointGroup.style.display = (accion === 'setpoint') ? 'block' : 'none';
+    }
+  </script>
+
+{% endblock %}
