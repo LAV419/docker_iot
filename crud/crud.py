@@ -4,6 +4,10 @@ import os, logging
 from functools import wraps
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
+import json
+import paho.mqtt.publish as publish
+import paho.mqtt.client as mqtt
+
 
 logging.basicConfig(format='%(asctime)s - CRUD - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -157,8 +161,74 @@ def toggle_theme():
 def inject_theme():
     return {'theme': session.get('theme', 'flatly')}  # flatly por defecto
 
-@app.route('/publicar')
+import time
+import paho.mqtt.client as mqtt
+
+def publicar_mensaje(topic, mensaje, servidor, puerto, usuario, password, usar_tls=True):
+    client = mqtt.Client()
+
+    if usuario and password:
+        client.username_pw_set(usuario, password)
+
+    if usar_tls:
+        client.tls_set()  # O client.tls_set(ca_certs="ca.crt")
+
+    client.connect(servidor, puerto, 10)
+
+    result = client.publish(topic, mensaje, qos=0)
+    result.wait_for_publish()
+
+    client.disconnect()
+
+
+
+@app.route('/publicar', methods=["GET", "POST"])
 @require_login
 def publicar():
-    nodos = ['Nodo 1', 'Nodo 2', 'Nodo 3']  # Lista de nodos ficticia
-    return render_template('publicar.html', nodos=nodos)
+    cur = mysql.connection.cursor()
+
+    if request.method == "POST":
+        nodo_id = request.form["nodo"]
+        modo = request.form["modo"]
+        setpoint = request.form.get("setpoint", type=float)
+
+        cur.execute("SELECT servidor_mqtt, puerto, usuario, contrasena FROM nodos WHERE id = %s", (nodo_id,))
+        config = cur.fetchone()
+        cur.close()
+
+        if not config:
+            flash("Nodo no encontrado")
+            return redirect(url_for('publicar'))
+
+        servidor, puerto, usuario, password = config
+
+        if modo == "destello":
+            topic = f"{nodo_id}/destello"
+            mensaje = "destello"
+        elif modo == "setpoint":
+            topic = f"{nodo_id}/setpoint"
+            mensaje = json.dumps({"setpoint": setpoint})
+        else:
+            flash("Modo inválido")
+            return redirect(url_for('publicar'))
+
+        try:
+            publicar_mensaje(topic, mensaje, servidor, puerto, usuario, password)
+            flash("Mensaje publicado correctamente")
+            logging.info(f"Publicado en {topic}: {mensaje}")
+        except Exception as e:
+            flash("Error al publicar en MQTT")
+            logging.error(f"MQTT Error: {e}")
+
+        return redirect(url_for('publicar'))
+
+    try:
+        cur.execute("SELECT id FROM nodos")
+        nodos = cur.fetchall()
+    except Exception as e:
+        logging.error(f"Error al obtener nodos: {e}")
+        nodos = []
+
+    return render_template("publicar.html", nodos=nodos)
+
+
