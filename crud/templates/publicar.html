@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
-<a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Atrás</a>
+<a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Atras</a>
 
-<div class="container border p-4 rounded bg-light">
+<div class="card card-body">
   <form method="POST" action="{{ url_for('publicar') }}">
     <div class="mb-3">
       <label for="modo" class="form-label">Modo</label>
