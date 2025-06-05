@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import json
 import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
+import time
 
 
 logging.basicConfig(format='%(asctime)s - CRUD - %(levelname)s - %(message)s', level=logging.INFO)
@@ -161,26 +162,16 @@ def toggle_theme():
 def inject_theme():
     return {'theme': session.get('theme', 'flatly')}  # flatly por defecto
 
-import time
-import paho.mqtt.client as mqtt
-
-def publicar_mensaje(topic, mensaje, servidor, puerto, usuario, password, usar_tls=True):
+def publicar_mensaje(topic, mensaje, servidor, puerto, usuario, password):
     client = mqtt.Client()
-
     if usuario and password:
         client.username_pw_set(usuario, password)
 
-    if usar_tls:
-        client.tls_set()  # O client.tls_set(ca_certs="ca.crt")
-
+    client.tls_set()
     client.connect(servidor, puerto, 10)
-
     result = client.publish(topic, mensaje, qos=0)
     result.wait_for_publish()
-
     client.disconnect()
-
-
 
 @app.route('/publicar', methods=["GET", "POST"])
 @require_login
